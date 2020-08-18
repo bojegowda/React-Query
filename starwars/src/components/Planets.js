@@ -2,11 +2,11 @@ import React, {
     useState
 } from 'react';
 import {
-    useQuery
+    usePaginatedQuery
 } from 'react-query'
 import Planet from "./Planet"
 
-const fetchPlanets = async (key, greeting, page) => {
+const fetchPlanets = async (key, page) => {
 
     const res = await fetch(`http://swapi.dev/api/planets/?page=${page}`);
     return res.json();
@@ -18,29 +18,17 @@ const Planets = () => {
             setPage
         ] = useState(1);
         const {
-            data,
+            resolvedData,
+            latestData,
             status
-        } = useQuery(['planets', 'hello,ninjas',
+        } = usePaginatedQuery(['planets',
             page
         ], fetchPlanets);
-        console.log(data);
 
 
         return ( < div >
             <
             h2 > Planets < /h2>
-
-
-            <
-            button onClick = {
-                () => setPage(1)
-            } > page 1 < /button> <
-            button onClick = {
-                () => setPage(2)
-            } > page 2 < /button> <
-            button onClick = {
-                () => setPage(3)
-            } > page 3 < /button> 
 
 
             {
@@ -53,8 +41,29 @@ const Planets = () => {
                 )
             } {
                 status === 'success' && ( <
+                        >
+                        <
+                        button onClick = {
+                            () => setPage(old => Math.max(old - 1, 1))
+                        }
+                        disabled = {
+                            page === 1
+                        } >
+                        Previous page < /button> <
+                        button > {
+                            page
+                        } < /button> <
+                        button disabled = {
+                            !latestData || !latestData.next
+                        }
+                        onClick = {
+                            () => setPage(old => (!latestData || !latestData.next ? old : old + 1))
+                        } > Next page < /button>
+
+
+                        <
                         div > {
-                            data.results.map(planet =>
+                            resolvedData.results.map(planet =>
                                 <
                                 Planet key = {
                                     planet.name
@@ -63,7 +72,7 @@ const Planets = () => {
                                     planet
                                 }
                                 / > )
-                            } < /div>
+                            } < /div> < / >
                         )
                     } <
                     /
