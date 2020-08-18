@@ -7,25 +7,29 @@ import {
 import Planet from "./Planet"
 
 const fetchPlanets = async (key, greeting, page) => {
-    const res = await fetch('http://swapi.dev/api/planets/?page=${page}');
+
+    const res = await fetch(`http://swapi.dev/api/planets/?page=${page}`);
     return res.json();
 }
 
 const Planets = () => {
-        const {
+        const [
             page,
             setPage
-        } = useState(1);
+        ] = useState(1);
         const {
             data,
             status
-        } = useQuery(['planets', 'hello,ninjas', page], fetchPlanets);
+        } = useQuery(['planets', 'hello,ninjas',
+            page
+        ], fetchPlanets);
         console.log(data);
 
 
         return ( < div >
             <
             h2 > Planets < /h2>
+
 
             <
             button onClick = {
@@ -36,7 +40,8 @@ const Planets = () => {
             } > page 2 < /button> <
             button onClick = {
                 () => setPage(3)
-            } > page 3 < /button>
+            } > page 3 < /button> 
+
 
             {
                 status === 'loading' && ( <
